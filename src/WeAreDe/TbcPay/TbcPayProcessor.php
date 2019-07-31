@@ -203,7 +203,7 @@ class TbcPayProcessor
         );
 
         if ($this->account) {
-            $post_fields['account'] = '80|0000';
+            $post_fields['account'] = $this->account;
         }
 
         return $this->process($post_fields);
@@ -231,7 +231,7 @@ class TbcPayProcessor
         );
 
         if ($this->account) {
-            $post_fields['account'] = '80|0000';
+            $post_fields['account'] = $this->account;
         }
 
         return $this->process($post_fields);
