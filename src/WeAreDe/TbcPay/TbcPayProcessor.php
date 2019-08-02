@@ -1,23 +1,23 @@
 <?php namespace WeAreDe\TbcPay;
 
 /**
-*
-* Tbcpay - online payments php SDK
-*
-*
-* There are two types of transaction within this system: SMS and DMS.
-* SMS - is direct payment, where money is charged in 1 event.
-* DMS - is delayed. Requires two events: first event blocks money on the card, second event takes this money.
-* Second event can be carried out when product is shipped to the customer for example.
-*
-* Every 24 hours, the merchant must send a request to server to close the business day.
-*
-* Detailed instructions can be found in README.md or online
-* https://github.com/wearede/tbcpay-php
-*
-* Written and maintained by sandro@weare.de.com
-*
-*/
+ *
+ * Tbcpay - online payments php SDK
+ *
+ *
+ * There are two types of transaction within this system: SMS and DMS.
+ * SMS - is direct payment, where money is charged in 1 event.
+ * DMS - is delayed. Requires two events: first event blocks money on the card, second event takes this money.
+ * Second event can be carried out when product is shipped to the customer for example.
+ *
+ * Every 24 hours, the merchant must send a request to server to close the business day.
+ *
+ * Detailed instructions can be found in README.md or online
+ * https://github.com/wearede/tbcpay-php
+ *
+ * Written and maintained by sandro@weare.de.com
+ *
+ */
 class TbcPayProcessor
 {
 
@@ -68,7 +68,7 @@ class TbcPayProcessor
 
     /**
      * authorization language identifier, optional (up to 32 characters)
-             * EN, GE e.g,
+     * EN, GE e.g,
      * @var string
      */
     public $language;
@@ -86,6 +86,18 @@ class TbcPayProcessor
     public $account;
 
     /**
+     * Used with reoccurring payments
+     * @var string
+     */
+    public $recc_pmnt_id;
+
+    /**
+     * Used with reoccurring payments
+     * @var string
+     */
+    public $perspayee_expiry = '1299'; // 31/12/2099
+
+    /**
      * ? this seems to be ignored by tbcbank
      * @var string
      * private $property_name;
@@ -99,21 +111,21 @@ class TbcPayProcessor
 
 
     /**
-     * @param string  $cert_path
-     * @param string  $cert_pass
-     * @param string  $client_ip_addr
+     * @param string $cert_path
+     * @param string $cert_pass
+     * @param string $client_ip_addr
      */
     public function __construct($cert_path, $cert_pass, $client_ip_addr)
     {
-        $this->cert_path      = $cert_path;
-        $this->cert_pass      = $cert_pass;
+        $this->cert_path = $cert_path;
+        $this->cert_pass = $cert_pass;
 
         $this->client_ip_addr = $client_ip_addr;
     }
 
     /**
      * Curl is responsible for sending data to remote server, using certificate for ssl connection
-     * @param  string $query_string created from an array using method build_query_string
+     * @param string $query_string created from an array using method build_query_string
      * @return string returns tbc server response in the form of key: value \n key: value. OR error: value.
      */
     private function curl($query_string)
@@ -138,7 +150,7 @@ class TbcPayProcessor
 
     /**
      * Building string from array
-     * @param  array  $post_fields
+     * @param array $post_fields
      * @return string
      */
     private function build_query_string($post_fields)
@@ -148,7 +160,7 @@ class TbcPayProcessor
 
     /**
      * Parse tbcbank server response string into an array
-     * @param  string $string
+     * @param string $string
      * @return array
      */
     private function parse_result($string)
@@ -158,7 +170,7 @@ class TbcPayProcessor
         foreach ($array1 as $key => $value) {
             $array2 = explode(':', $value);
             if (!empty($array2[1])) {
-                $result[ $array2[0] ] = trim($array2[1]);
+                $result[$array2[0]] = trim($array2[1]);
             }
         }
 
@@ -170,7 +182,7 @@ class TbcPayProcessor
      * curls it to tbc server
      * parses results
      * returns parsed results
-     * @param  array $post_fields
+     * @param array $post_fields
      * @return array
      */
     private function process($post_fields)
@@ -239,7 +251,7 @@ class TbcPayProcessor
 
     /**
      * Executing a DMS transaction
-     * @param  string $trans_id
+     * @param string $trans_id
      * @return array  RESULT, RESULT_CODE, BRN, APPROVAL_CODE, CARD_NUMBER, error
      * RESULT         - transaction results: OK - successful transaction, FAILED - failed transaction
      * RESULT_CODE    - transaction result code returned from Card Suite Processing RTPS (3 digits)
@@ -266,7 +278,7 @@ class TbcPayProcessor
 
     /**
      * Transaction result
-     * @param  string $trans_id
+     * @param string $trans_id
      * @return array  RESULT, RESULT_PS, RESULT_CODE, 3DSECURE, RRN, APPROVAL_CODE, CARD_NUMBER, AAV, RECC_PMNT_ID, RECC_PMNT_EXPIRY, MRCH_TRANSACTION_ID
      * RESULT              - OK              - successfully completed transaction,
      *                       FAILED          - transaction has failed,
@@ -315,9 +327,9 @@ class TbcPayProcessor
 
     /**
      * Transaction reversal
-     * @param  string $trans_id
-     * @param  string $amount          reversal amount in fractional units (up to 12 characters). For DMS authorizations only full amount can be reversed, i.e., the reversal and authorization amounts have to match. In other cases partial reversal is also available.
-     * @param  string $suspected_fraud flag, indicating that transaction is being reversed because of suspected fraud. In such cases this parameter value should be set to yes. If this parameter is used, then only full reversals are allowed.
+     * @param string $trans_id
+     * @param string $amount reversal amount in fractional units (up to 12 characters). For DMS authorizations only full amount can be reversed, i.e., the reversal and authorization amounts have to match. In other cases partial reversal is also available.
+     * @param string $suspected_fraud flag, indicating that transaction is being reversed because of suspected fraud. In such cases this parameter value should be set to yes. If this parameter is used, then only full reversals are allowed.
      * @return array  RESULT, RESULT_CODE
      * RESULT         - OK              - successful reversal transaction
      *                  REVERSED        - transaction has already been reversed
@@ -341,7 +353,7 @@ class TbcPayProcessor
     /**
      * Transaction refund
      * full original amount is always refunded
-     * @param  string $trans_id
+     * @param string $trans_id
      * @return array  RESULT, RESULT_CODE, REFUND_TRANS_ID
      * RESULT          - OK     - successful refund transaction
      *               FAILED - failed refund transaction
@@ -353,8 +365,8 @@ class TbcPayProcessor
     public function refund_transaction($trans_id)
     {
         $post_fields = array(
-            'command'         => 'k', // identifies a request for transaction registration
-            'trans_id'        => $trans_id
+            'command'  => 'k', // identifies a request for transaction registration
+            'trans_id' => $trans_id
         );
 
         return $this->process($post_fields);
@@ -362,8 +374,8 @@ class TbcPayProcessor
 
     /**
      * Credit transaction
-     * @param  string  $trans_id original transaction identifier, mandatory (28 characters)
-     * @param  string  $amount   credit transaction amount in fractional units (up to 12 characters)
+     * @param string $trans_id original transaction identifier, mandatory (28 characters)
+     * @param string $amount credit transaction amount in fractional units (up to 12 characters)
      * @return array   RESULT, RESULT_CODE, REFUND_TRANS_ID
      * RESULT          - OK     - successful credit transaction
      *           FAILED - failed credit transaction
@@ -375,9 +387,9 @@ class TbcPayProcessor
     public function credit_transaction($trans_id, $amount = '')
     {
         $post_fields = array(
-            'command'         => 'g', // identifies a request for transaction registration
-            'trans_id'        => $trans_id,
-            'amount'          => $amount
+            'command'  => 'g', // identifies a request for transaction registration
+            'trans_id' => $trans_id,
+            'amount'   => $amount
         );
 
         return $this->process($post_fields);
@@ -399,11 +411,36 @@ class TbcPayProcessor
     public function close_day()
     {
         $post_fields = array(
-            'command'         => 'b' // identifies a request for transaction registration
+            'command' => 'b' // identifies a request for transaction registration
         );
 
         return $this->process($post_fields);
     }
 
-    // Regular payments need to be implemented!
+    /*
+     *
+     */
+    public function dms_rp_start_transaction()
+    {
+        $post_fields = array(
+            'command'             => 'z', // identifies a request for transaction registration
+            'amount'              => $this->amount,
+            'currency'            => $this->currency,
+            'client_ip_addr'      => $this->client_ip_addr,
+            'description'         => $this->description,
+            'language'            => $this->language,
+            'biller'              => $this->biller,
+            'biller_client_id'    => $this->recc_pmnt_id,
+            'perspayee_expiry'    => $this->perspayee_expiry,
+            'perspayee_gen'       => 1,
+            'perspayee_overwrite' => 1,
+            'msg_type'            => 'DMS',
+        );
+
+        if ($this->account) {
+            $post_fields['account'] = $this->account;
+        }
+
+        return $this->process($post_fields);
+    }
 }
