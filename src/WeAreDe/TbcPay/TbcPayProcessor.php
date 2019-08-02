@@ -443,4 +443,25 @@ class TbcPayProcessor
 
         return $this->process($post_fields);
     }
+
+    /*
+     *
+     */
+    public function make_rp()
+    {
+        $post_fields = array(
+            'command'             => 'e', // identifies a request for transaction registration
+            'amount'              => $this->amount,
+            'currency'            => $this->currency,
+            'client_ip_addr'      => $this->client_ip_addr,
+            'description'         => $this->description,
+            'biller_client_id'    => $this->recc_pmnt_id,
+        );
+
+        if ($this->account) {
+            $post_fields['account'] = $this->account;
+        }
+
+        return $this->process($post_fields);
+    }
 }
