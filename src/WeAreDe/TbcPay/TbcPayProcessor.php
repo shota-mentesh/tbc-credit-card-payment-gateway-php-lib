@@ -418,7 +418,8 @@ class TbcPayProcessor
     }
 
     /*
-     *
+     * Authorizes DMS transaction and saves card
+     * See dms_start_authorization() for details
      */
     public function dms_rp_start_transaction()
     {
@@ -445,7 +446,7 @@ class TbcPayProcessor
     }
 
     /*
-     *
+     * Make regular payment
      */
     public function make_rp()
     {
