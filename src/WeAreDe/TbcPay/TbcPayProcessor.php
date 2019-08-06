@@ -352,8 +352,9 @@ class TbcPayProcessor
 
     /**
      * Transaction refund
-     * full original amount is always refunded
+     * Partial refund is possible
      * @param string $trans_id
+     * @param int $amount
      * @return array  RESULT, RESULT_CODE, REFUND_TRANS_ID
      * RESULT          - OK     - successful refund transaction
      *               FAILED - failed refund transaction
@@ -362,11 +363,12 @@ class TbcPayProcessor
      * error           - In case of an error
      * warning         - In case of warning (reserved for future use).
      */
-    public function refund_transaction($trans_id)
+    public function refund_transaction($trans_id, $amount)
     {
         $post_fields = array(
             'command'  => 'k', // identifies a request for transaction registration
-            'trans_id' => $trans_id
+            'trans_id' => $trans_id,
+            'amount'   => $amount,
         );
 
         return $this->process($post_fields);
@@ -451,12 +453,12 @@ class TbcPayProcessor
     public function make_rp()
     {
         $post_fields = array(
-            'command'             => 'e', // identifies a request for transaction registration
-            'amount'              => $this->amount,
-            'currency'            => $this->currency,
-            'client_ip_addr'      => $this->client_ip_addr,
-            'description'         => $this->description,
-            'biller_client_id'    => $this->recc_pmnt_id,
+            'command'          => 'e', // identifies a request for transaction registration
+            'amount'           => $this->amount,
+            'currency'         => $this->currency,
+            'client_ip_addr'   => $this->client_ip_addr,
+            'description'      => $this->description,
+            'biller_client_id' => $this->recc_pmnt_id,
         );
 
         if ($this->account) {
