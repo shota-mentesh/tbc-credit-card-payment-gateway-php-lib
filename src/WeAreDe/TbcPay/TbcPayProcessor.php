@@ -420,6 +420,34 @@ class TbcPayProcessor
     }
 
     /*
+     * Starts SMS transaction and saves card
+     * See sms_start_transaction() for details
+     */
+    public function sms_rp_start_transaction()
+    {
+        $post_fields = array(
+            'command'             => 'z', // identifies a request for transaction registration
+            'amount'              => $this->amount,
+            'currency'            => $this->currency,
+            'client_ip_addr'      => $this->client_ip_addr,
+            'description'         => $this->description,
+            'language'            => $this->language,
+            'biller'              => $this->biller,
+            'biller_client_id'    => $this->recc_pmnt_id,
+            'perspayee_expiry'    => $this->perspayee_expiry,
+            'perspayee_gen'       => 1,
+            'perspayee_overwrite' => 1,
+            'msg_type'            => 'SMS',
+        );
+
+        if ($this->account) {
+            $post_fields['account'] = $this->account;
+        }
+
+        return $this->process($post_fields);
+    }
+
+    /*
      * Authorizes DMS transaction and saves card
      * See dms_start_authorization() for details
      */
