@@ -98,6 +98,12 @@ class TbcPayProcessor
     public $perspayee_expiry = '1299'; // 31/12/2099
 
     /**
+     * visible on account statement, optional (up to 99 latin characters)
+     * @var string
+     */
+    public $payee;
+
+    /**
      * ? this seems to be ignored by tbcbank
      * @var string
      * private $property_name;
@@ -211,6 +217,7 @@ class TbcPayProcessor
             'description'    => $this->description,
             'language'       => $this->language,
             'biller'         => $this->biller,
+            'payee'          => $this->payee,
             'msg_type'       => 'SMS'
         );
 
@@ -239,6 +246,7 @@ class TbcPayProcessor
             'description'    => $this->description,
             'language'       => $this->language,
             'biller'         => $this->biller,
+            'payee'          => $this->payee,
             'msg_type'       => 'DMS'
         );
 
@@ -433,6 +441,7 @@ class TbcPayProcessor
             'description'         => $this->description,
             'language'            => $this->language,
             'biller'              => $this->biller,
+            'payee'               => $this->payee,
             'biller_client_id'    => $this->recc_pmnt_id,
             'perspayee_expiry'    => $this->perspayee_expiry,
             'perspayee_gen'       => 1,
@@ -461,6 +470,7 @@ class TbcPayProcessor
             'description'         => $this->description,
             'language'            => $this->language,
             'biller'              => $this->biller,
+            'payee'               => $this->payee,
             'biller_client_id'    => $this->recc_pmnt_id,
             'perspayee_expiry'    => $this->perspayee_expiry,
             'perspayee_gen'       => 1,
