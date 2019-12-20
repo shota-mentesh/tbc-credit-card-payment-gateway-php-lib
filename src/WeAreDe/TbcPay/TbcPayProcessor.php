@@ -497,6 +497,7 @@ class TbcPayProcessor
             'client_ip_addr'   => $this->client_ip_addr,
             'description'      => $this->description,
             'biller_client_id' => $this->recc_pmnt_id,
+            'payee'            => $this->payee,
         );
 
         if ($this->account) {
