@@ -506,4 +506,28 @@ class TbcPayProcessor
 
         return $this->process($post_fields);
     }
+
+    public function register_card_dms()
+    {
+        $post_fields = array(
+            'command'             => 'p', // identifies a request for transaction registration
+            'currency'            => $this->currency,
+            'client_ip_addr'      => $this->client_ip_addr,
+            'description'         => $this->description,
+            'biller'              => $this->biller,
+            'payee'               => $this->payee,
+            'biller_client_id'    => $this->recc_pmnt_id,
+            'perspayee_expiry'    => $this->perspayee_expiry,
+            'perspayee_gen'       => 1,
+            'perspayee_overwrite' => 1,
+            'msg_type'            => 'AUTH',
+            'template_type'       => 'DMS',
+        );
+
+        if ($this->account) {
+            $post_fields['account'] = $this->account;
+        }
+
+        return $this->process($post_fields);
+    }
 }
